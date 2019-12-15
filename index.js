@@ -19,6 +19,13 @@ app.use(require("cors")());
 //     console.log(status);
 //     //res.send(req.body);
 // })
+app.get("/project/quantity", async (req, res) => {
+    let quant = await db.countRequirements();
+    res.send(quant.toString());
+    console.log(quant);
+
+})
+
 app.get("/project/all/:page/:limit", async (req, res) => {
     const { limit, page } = req.params;
     let result = await db.getAllRequirements(parseInt(page), parseInt(limit));
