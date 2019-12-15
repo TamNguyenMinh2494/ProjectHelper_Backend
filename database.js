@@ -14,7 +14,30 @@ const Database = function (credentials, databaseURL) {
 //         }))
 //     );
 // }
+Database.prototype.searchType = function (keyword) {
+    return new Promise((resolve, reject) => {
+        this.db.collection('/requirements').where(keyword, "==", true).get()
+            .then(snapshot => {
+                if (snapshot.empty) {
+                    return;
+                }
+                resolve(snapshot.forEach(doc => {
+                    console.log(doc.key, '=>', doc.data());
+                }));
+            })
+            .catch(err => {
+                console.log('Error getting documents', err);
+            });
+    })
+}
 
+Database.prototype.countRequirements = function () {
+    return new Promise((resolve, reject) => {
+        this.db.collection('/requirements').get().then((snapshotChanges) => {
+            resolve(snapshotChanges.size);
+        })
+    })
+}
 Database.prototype.getAllRequirements = function (page, limit) {
     return new Promise((resolve, reject) => {
         this.db.collection('/requirements').offset(page * limit).limit(limit).get().then((snapshotChanges) => {
