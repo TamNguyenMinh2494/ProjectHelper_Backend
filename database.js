@@ -3,6 +3,7 @@ const Database = function (credentials, databaseURL) {
     this.app = firebase.initializeApp({ credential: firebase.credential.cert(credentials), databaseURL: databaseURL });
     this.db = this.app.firestore();
     this.auth = this.app.auth();
+
 }
 // Database.prototype.getAllRequirements = function () {
 //     this.db.collection('/requirements').doc().snapshotChanges().pipe(
@@ -14,13 +15,15 @@ const Database = function (credentials, databaseURL) {
 //     );
 // }
 
-Database.prototype.getAllRequirements = function () {
-
-    this.db.collection('/requirements').get().then((snapshotChanges) => {
-        snapshotChanges.docs.map((doc) => {
-            return { id: doc.id, ...doc.data() }
+Database.prototype.getAllRequirements = function (page, limit) {
+    return new Promise((resolve, reject) => {
+        this.db.collection('/requirements').offset(page * limit).limit(limit).get().then((snapshotChanges) => {
+            resolve(snapshotChanges.docs.map((doc) => {
+                return { id: doc.id, ...doc.data() }
+            }));
         })
     })
+
 }
 
 Database.prototype.createRequirement = function (requirement) {
